@@ -1,6 +1,6 @@
 #!/usr/sbin/nft -f
 # Firewall der Firewall-VM (Pflichtenheft Kap. 3.1 und 6.2).
-# STATUS: ENTWURF, nicht getestet. Wird im Machbarkeitstest (1.0) und in T-06/T-13 geprüft.
+# STATUS: ENTWURF, nicht getestet. Wird im Machbarkeitstest (1.0) und in den Firewall-Tests T-13 (Reject) und T-14 (Backup/Restore-Umfeld laut Pflichtenheft) geprüft; ein Skript dafür gibt es noch nicht.
 # Annahme: Docker verwaltet keine eigenen iptables-Regeln (/etc/docker/daemon.json: "iptables": false),
 # Weiterleitung und Masquerade übernimmt allein diese Tabelle. Alternative laut Pflichtenheft: Docker-Regeln
 # behalten und diese Regeln in DOCKER-USER pflegen. Die Entscheidung fällt nach dem Machbarkeitstest.

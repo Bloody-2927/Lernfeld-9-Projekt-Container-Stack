@@ -8,28 +8,28 @@ Grundlage: Pflichtenheft V1.2 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und l
 
 | Zone | Netz | Dienste |
 |---|---|---|
-| 10 Clients | 192.168.10.0/24 | Windows-PC .10, Test-Client-VM .11, Firewall-VM .1 |
-| 20 Web | 10.20.20.0/24 | nginx .4 (Caddy .2, Pi-hole .3, Nextcloud .5 folgen) |
+| 10 Clients | 192.168.10.0/24 | Windows-PC .10, lf9-client1 .11, lf9-client2 .12, lf9-client-gui .13 (Desktop mit Browser), Firewall-VM .1 |
+| 20 Web | 10.20.20.0/24 | nginx .4 mit www, web2, intern und Minispiel (Caddy .2, Pi-hole .3, Nextcloud .5 folgen) |
 | 30 Infrastruktur | 10.20.30.0/24 | bind9 .2, Uptime Kuma .3 (Loki/Grafana .4 folgt) |
 | 40 Fileserver | 10.20.40.0/24 | vsftpd .2, Samba .3 |
 | 50 Datenbank | 10.20.50.0/24 | MariaDB .2 |
-| 60 VoIP | 10.20.60.0/24 | Asterisk/coturn .2 (optional, folgt) |
+| 60 VoIP | 10.20.60.0/24 | Asterisk 20 .2 (Nebenstellen 1001 und 1002, Echotest 600) |
 
 ## Stand
 
 | Teil | Stand |
 |---|---|
-| bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma (`compose.yml`) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (31 von 31 Prüfungen bestanden am 02.11.2026; Uptime Kuma antwortet auf Port 3001, Monitore noch nicht eingerichtet) |
+| bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma, Asterisk (`compose.yml`) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (39 von 39 Prüfungen am 02.11.2026; Uptime Kuma antwortet auf Port 3001, Monitore noch nicht eingerichtet) |
 | Zonenübergreifendes Routing, nftables, Reject/Drop | **nicht getestet** – erst in der Firewall-VM möglich (`nftables/lab.nft` ist ein Entwurf) |
 | `setup.sh`, `scripts/windows/01-hyperv-setup.ps1`, `scripts/backup.sh`, `scripts/windows/map-shares.cmd` | **nicht getestet** (Machbarkeitstest 1.0 steht aus) |
-| Caddy, Pi-hole, Nextcloud, Loki/Grafana, VoIP | noch nicht umgesetzt (Aufgaben 4.4 bis 4.6) |
+| Caddy, Pi-hole, Nextcloud, Loki/Grafana | noch nicht umgesetzt (Aufgaben 4.4 bis 4.6) |
 
 ## Lokaler Test (Docker Desktop, ohne VM)
 
 ```bash
 cp .env.example .env        # Passwörter ersetzen (CHANGE_ME), .env wird nicht committet
 docker compose --profile test up -d --build
-bash tests/run-tests.sh     # Tests T-01 bis T-06, T-12 (Pflichtenheft Kapitel 11)
+bash tests/run-tests.sh     # Tests T-01 bis T-06, T-12 und T-15 (VoIP), Pflichtenheft Kapitel 11
 docker compose --profile test down       # Container stoppen (Daten bleiben in den Volumes)
 docker compose --profile test down -v    # zusätzlich Volumes löschen
 ```
@@ -49,7 +49,9 @@ Der Test-Client (`--profile test`) hängt in allen Zonen. Firewall und Routing z
 - `compose.yml` – Netze (Zonen), Dienste, Volumes
 - `bind9/`, `web/`, `ftp/`, `smb/`, `db/`, `client/` – Konfiguration je Dienst
 - `nftables/lab.nft` – Firewall-Entwurf
+- `voip/` – Asterisk (Image aus dem Quelltext, Konfiguration)
 - `scripts/` – Backup, Hyper-V-Einrichtung, Mapping-Skript für Windows
+- Netzwerkdokumentation: Vault, `02 Projekt/LF9 Übungslabor/05P Dokumentation/Netzwerkdokumentation LF9.md`
 - `tests/run-tests.sh` – automatisierte Tests
 
 Keine Passwörter im Repository: `.env` ist in `.gitignore`, Vorlage ist `.env.example`.
