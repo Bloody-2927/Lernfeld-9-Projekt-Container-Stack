@@ -17,10 +17,18 @@ http://portal.kopernikus-lab.lokal {
 	reverse_proxy 10.20.30.8:3000
 }
 http://docker.kopernikus-lab.lokal {
-	reverse_proxy 10.20.30.9:9000
+	@erlaubt remote_ip 192.168.10.11 192.168.10.12 192.168.10.13 10.20.0.0/16
+	handle @erlaubt {
+		reverse_proxy 10.20.30.9:9000
+	}
+	respond "Nur aus den Client-VMs erreichbar" 403
 }
 http://dbadmin.kopernikus-lab.lokal {
-	reverse_proxy 10.20.20.6:8080
+	@erlaubt remote_ip 192.168.10.11 192.168.10.12 192.168.10.13 10.20.0.0/16
+	handle @erlaubt {
+		reverse_proxy 10.20.20.6:8080
+	}
+	respond "Nur aus den Client-VMs erreichbar" 403
 }
 http://pihole-ui.kopernikus-lab.lokal {
 	reverse_proxy 10.20.20.3:80
@@ -28,5 +36,5 @@ http://pihole-ui.kopernikus-lab.lokal {
 
 # Alles andere: kurze Kennung statt Fehlerseite
 :80 {
-	respond "Heiner-IT Systems: Reverse Proxy Caddy (Zone 20)" 200
+	respond "Heiner-IT Systems" 200
 }

@@ -43,7 +43,9 @@ expect_has "web2 liefert Website 2" "$(c curl -s --max-time 5 http://web2.kopern
 echo "== T-03 FTP anonym"
 expect_has "anonym: Download aus /pub" "$(c curl -s --max-time 8 ftp://ftp.kopernikus-lab.lokal/README.txt)" "Freier"
 c sh -c 'echo test > /tmp/up.txt'
-if c curl -s --max-time 8 -T /tmp/up.txt ftp://ftp.kopernikus-lab.lokal/up.txt >/dev/null 2>&1; then fail "anonym: Upload muss verweigert werden"; else ok "anonym: Upload verweigert"; fi
+c curl -s --max-time 8 -T /tmp/up.txt ftp://ftp.kopernikus-lab.lokal/up.txt >/dev/null 2>&1; rc=$?
+# curl-Exitcode 25 = Upload vom Server abgelehnt (550), 7/28 wären Verbindungsfehler und zählen nicht als Verweigerung
+expect_eq "anonym: Upload verweigert (Server lehnt ab)" "$rc" "25"
 
 echo "== T-04 FTP user1 / user2"
 if c curl -s --max-time 8 -u "user1:${FTP_USER1_PASSWORD}" -T /tmp/up.txt ftp://ftp.kopernikus-lab.lokal/t1.txt >/dev/null 2>&1; then ok "user1: Upload im eigenen Bereich"; else fail "user1: Upload im eigenen Bereich"; fi
@@ -57,9 +59,9 @@ echo "== T-05 SMB"
 expect_has "pub: anonym lesen" "$(c smbclient //files.kopernikus-lab.lokal/pub -N -m SMB3 -c ls 2>&1)" "README.txt"
 expect_has "pub: Schreiben verweigert" "$(c smbclient //files.kopernikus-lab.lokal/pub -N -m SMB3 -c 'put /tmp/up.txt x.txt' 2>&1)" "NT_STATUS_ACCESS_DENIED"
 expect_has "Benutzer1: eigener Share schreibbar" "$(c smbclient //files.kopernikus-lab.lokal/Benutzer1 -U "benutzer1%${SMB_USER1_PASSWORD}" -m SMB3 -c 'put /tmp/up.txt a.txt; ls' 2>&1)" "a.txt"
-expect_has "benutzer2 auf Benutzer1-Share verweigert" "$(c smbclient //files.kopernikus-lab.lokal/Benutzer1 -U "benutzer2%${SMB_USER2_PASSWORD}" -m SMB3 -c ls 2>&1)" "NT_STATUS"
-expect_has "anonym auf Benutzer1-Share verweigert" "$(c smbclient //files.kopernikus-lab.lokal/Benutzer1 -N -m SMB3 -c ls 2>&1)" "NT_STATUS"
-expect_has "SMB1 abgelehnt (Mindestprotokoll SMB2)" "$(c smbclient //files.kopernikus-lab.lokal/pub -N -m NT1 -c ls 2>&1)" "NT_STATUS\|protocol negotiation failed\|Connection"
+expect_has "benutzer2 auf Benutzer1-Share verweigert" "$(c smbclient //files.kopernikus-lab.lokal/Benutzer1 -U "benutzer2%${SMB_USER2_PASSWORD}" -m SMB3 -c ls 2>&1)" "NT_STATUS_ACCESS_DENIED"
+expect_has "anonym auf Benutzer1-Share verweigert" "$(c smbclient //files.kopernikus-lab.lokal/Benutzer1 -N -m SMB3 -c ls 2>&1)" "NT_STATUS_\(ACCESS_DENIED\|LOGON_FAILURE\)"
+expect_has "SMB1 abgelehnt (Mindestprotokoll SMB2)" "$(c smbclient //files.kopernikus-lab.lokal/pub -N -m NT1 -c ls 2>&1)" "NT_STATUS_\(INVALID_NETWORK_RESPONSE\|CONNECTION_DISCONNECTED\)\|protocol negotiation failed"
 
 echo "== T-06 Datenbank (Rechte)"
 expect_has "web-Benutzer von fremder Adresse abgewiesen (1130)" "$(c mariadb -h10.20.50.2 -uweb -p"${DB_WEB_PASSWORD}" -e 'select 1' 2>&1)" "1130 - Host '10.20.50.250' is not allowed"
@@ -81,25 +83,26 @@ expect_eq "richtiges Kennwort: Nebenstelle 1001 angemeldet (200)" "$(c python3 /
 expect_has "1001 steht in der Kontaktliste" "$(docker compose exec -T voip asterisk -rx 'pjsip show contacts' 2>&1)" "1001/sip"
 
 echo "== T-16 Caddy und Nextcloud (Reverse Proxy)"
-expect_has "Nextcloud läuft (status.php direkt)" "$(c curl -s --max-time 8 http://10.20.20.5/status.php)" "installed"
-expect_has "Caddy leitet cloud.kopernikus-lab.lokal an Nextcloud" "$(c curl -s --max-time 8 -H 'Host: cloud.kopernikus-lab.lokal' http://10.20.20.2/status.php)" "installed"
+expect_has "Nextcloud läuft (status.php direkt)" "$(c curl -s --max-time 8 http://10.20.20.5/status.php)" "\"version\""
+expect_has "Caddy leitet cloud.kopernikus-lab.lokal an Nextcloud" "$(c curl -s --max-time 8 -H 'Host: cloud.kopernikus-lab.lokal' http://10.20.20.2/status.php)" "\"version\""
 expect_has "Caddy leitet dbadmin an Adminer" "$(c curl -s --max-time 8 -H 'Host: dbadmin.kopernikus-lab.lokal' http://10.20.20.2/)" "Adminer"
-expect_has "Caddy: unbekannter Name liefert Kennung" "$(c curl -s --max-time 8 http://10.20.20.2/)" "Caddy"
+expect_has "Caddy: unbekannter Name liefert Kennung" "$(c curl -s --max-time 8 http://10.20.20.2/)" "Heiner-IT Systems"
+expect_has "Adminer-Konto: nur Datenänderung auf webapp, Quelle 10.20.20.6" "$(docker compose exec -T db mariadb -uroot -p"${MARIADB_ROOT_PASSWORD}" -N -e "SHOW GRANTS FOR 'adminer'@'10.20.20.6'" 2>&1)" "webapp"
 
 echo "== T-17 Pi-hole (DNS-Filter)"
 expect_has "Pi-hole beantwortet DNS (pi.hole)" "$(c dig +short +time=3 +tries=2 @10.20.20.3 pi.hole | tr -d '\r')" "10.20.20"
 expect_has "Pi-hole Weboberfläche erreichbar" "$(c curl -s -o /dev/null -w '%{http_code}' --max-time 8 http://10.20.20.3/admin/login)" "200"
 
 echo "== T-18 Logs (Loki, Promtail, Grafana)"
-expect_has "Loki bereit" "$(c curl -s --max-time 8 http://10.20.30.5:3100/ready)" "ready"
-expect_has "Grafana gesund" "$(c curl -s --max-time 8 http://10.20.30.4:3000/api/health)" "ok"
+expect_eq "Loki bereit" "$(c curl -s --max-time 8 http://10.20.30.5:3100/ready | tr -d '\r\n ')" "ready"
+expect_has "Grafana gesund" "$(c curl -s --max-time 8 http://10.20.30.4:3000/api/health)" "\"database\": \"ok\""
 expect_has "Grafana kennt die Loki-Datenquelle" "$(c curl -s --max-time 8 -u "admin:${GRAFANA_ADMIN_PASSWORD}" http://10.20.30.4:3000/api/datasources)" "Loki"
 for _ in $(seq 1 12); do labels=$(c curl -s --max-time 8 http://10.20.30.5:3100/loki/api/v1/label/container/values); echo "$labels" | grep -q "lf9-web" && break; sleep 5; done
 expect_has "Loki hat Logs von lf9-web (über Promtail)" "$labels" "lf9-web"
 
 echo "== T-19 Portal und Docker-Oberfläche"
 expect_has "Homepage zeigt das Portal" "$(c curl -s --max-time 8 -H 'Host: portal.kopernikus-lab.lokal' http://10.20.30.8:3000/)" "Heiner"
-expect_has "Portainer antwortet" "$(c curl -s --max-time 8 http://10.20.30.9:9000/api/system/status)" "Version"
+expect_has "Portainer antwortet (Version oder Hinweis auf die Ersteinrichtung)" "$(c curl -s --max-time 8 http://10.20.30.9:9000/api/system/status)" "Version\|initialization"
 
 echo
 echo "Ergebnis: $PASS bestanden, $FAIL fehlgeschlagen"

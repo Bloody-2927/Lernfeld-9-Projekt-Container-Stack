@@ -33,12 +33,12 @@
     .svc { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 12px; padding: 16px 18px; }
     .svc h3 { font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
     .svc h3 em { font-style: normal; font-size: .75rem; color: #7ae582; display: flex; align-items: center; gap: 6px; }
-    .svc h3 em::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7ae582; animation: blink 2s infinite; }
+    .svc h3 em::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
     @keyframes blink { 50% { opacity: .3; } }
     .svc p { color: var(--muted); font-size: .88rem; margin-top: 4px; }
     .svc code { font-size: .8rem; color: var(--text); background: #ffffff10; padding: 1px 6px; border-radius: 5px; }
     footer { border-top: 1px solid var(--line); text-align: center; color: var(--muted); font-size: .85rem; padding: 22px 0; }
-    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .o2 { transform: translate(-50%, -50%) rotate(90deg); } .o3 { transform: translate(-50%, -50%) rotate(180deg); } .o4 { transform: translate(-50%, -50%) rotate(270deg); } }
   </style>
 </head>
 <body>
@@ -58,10 +58,10 @@
 
   <main class="wrap">
     <div class="list">
-      <div class="svc" style="--c:#4cc9f0"><h3>Web <em>online</em></h3><p>nginx mit zwei virtuellen Hosts.</p><p><code>10.20.20.0/24</code></p></div>
-      <div class="svc" style="--c:#7ae582"><h3>Infrastruktur <em>online</em></h3><p>DNS (bind9) und Monitoring (Uptime Kuma).</p><p><code>10.20.30.0/24</code></p></div>
-      <div class="svc" style="--c:#f72585"><h3>Dateien <em>online</em></h3><p>FTP und SMB mit Benutzerrechten.</p><p><code>10.20.40.0/24</code></p></div>
-      <div class="svc" style="--c:#b794f6"><h3>Datenbank <em>online</em></h3><p>MariaDB, nur aus der Web-Zone erreichbar.</p><p><code>10.20.50.0/24</code></p></div>
+      <div class="svc" style="--c:#4cc9f0"><h3>Web <em>Zone 20</em></h3><p>nginx mit zwei virtuellen Hosts.</p><p><code>10.20.20.0/24</code></p></div>
+      <div class="svc" style="--c:#7ae582"><h3>Infrastruktur <em>Zone 30</em></h3><p>DNS (bind9) und Monitoring (Uptime Kuma).</p><p><code>10.20.30.0/24</code></p></div>
+      <div class="svc" style="--c:#f72585"><h3>Dateien <em>Zone 40</em></h3><p>FTP und SMB mit Benutzerrechten.</p><p><code>10.20.40.0/24</code></p></div>
+      <div class="svc" style="--c:#b794f6"><h3>Datenbank <em>Zone 50</em></h3><p>MariaDB, nur aus der Web-Zone erreichbar.</p><p><code>10.20.50.0/24</code></p></div>
     </div>
   </main>
 

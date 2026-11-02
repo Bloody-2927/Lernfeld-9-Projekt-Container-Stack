@@ -18,6 +18,7 @@
     .pad .u { grid-column: 2; } .pad .l { grid-column: 1; grid-row: 2; } .pad .d { grid-column: 2; grid-row: 2; } .pad .r { grid-column: 3; grid-row: 2; }
     .start { margin-top: 14px; padding: 10px 22px; border: 0; border-radius: 10px; background: var(--a); color: #04121f; font-weight: 700; cursor: pointer; }
     a { color: var(--a); font-size: .88rem; display: inline-block; margin-top: 16px; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -25,7 +26,8 @@
     <h1>Paket-Jäger</h1>
     <p>Steuere den Datenstrom mit den Pfeiltasten (oder den Knöpfen), sammle Pakete ein und weiche der Wand und dir selbst aus.</p>
     <div class="bar"><span>Pakete: <span id="score">0</span></span><span>Rekord: <span id="best">0</span></span></div>
-    <canvas id="c" width="360" height="360"></canvas>
+    <canvas id="c" width="360" height="360" role="img" aria-label="Spielfeld Paket-Jäger: Pfeiltasten steuern den Datenstrom"></canvas>
+    <p id="status" class="sr" role="status" aria-live="polite"></p>
     <div class="pad">
       <button class="u" data-d="u" aria-label="hoch">▲</button><button class="l" data-d="l" aria-label="links">◀</button>
       <button class="d" data-d="d" aria-label="runter">▼</button><button class="r" data-d="r" aria-label="rechts">▶</button>
@@ -69,13 +71,14 @@
       cx.fillText('Verbindung getrennt', cv.width / 2, cv.height / 2 - 6);
       cx.font = '16px system-ui'; cx.fillText(score + ' Pakete – nochmal?', cv.width / 2, cv.height / 2 + 22);
       document.getElementById('go').textContent = 'Neustart';
+      document.getElementById('status').textContent = 'Verbindung getrennt, ' + score + ' Pakete.';
     }
-    function start() { clearInterval(timer); reset(); draw(); timer = setInterval(step, 130); }
+    function start() { clearInterval(timer); reset(); draw(); document.getElementById('status').textContent = 'Spiel gestartet.'; timer = setInterval(step, 130); }
     document.getElementById('go').onclick = start;
     document.querySelectorAll('.pad button').forEach(b => b.onclick = () => turn(b.dataset.d));
     addEventListener('keydown', e => {
       const m = { ArrowUp: 'u', ArrowDown: 'd', ArrowLeft: 'l', ArrowRight: 'r', w: 'u', s: 'd', a: 'l', d: 'r' }[e.key];
-      if (m) { e.preventDefault(); turn(m); }
+      if (m && timer) { e.preventDefault(); turn(m); }
     });
     let t0;
     cv.addEventListener('touchstart', e => { t0 = e.touches[0]; });

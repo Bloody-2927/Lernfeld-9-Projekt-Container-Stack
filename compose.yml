@@ -78,7 +78,9 @@ volumes:
 services:
   # --- Pflichtdienste -------------------------------------------------------
   dns:
-    build: ./bind9
+    build:
+      context: ./bind9
+      network: host
     image: lf9-lab/bind9:1
     container_name: lf9-dns
     restart: unless-stopped
@@ -108,12 +110,11 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
-    depends_on:
-      dns:
-        condition: service_healthy
 
   ftp:
-    build: ./ftp
+    build:
+      context: ./ftp
+      network: host
     image: lf9-lab/vsftpd:1
     container_name: lf9-ftp
     restart: unless-stopped
@@ -133,7 +134,9 @@ services:
       retries: 5
 
   smb:
-    build: ./smb
+    build:
+      context: ./smb
+      network: host
     image: lf9-lab/samba:1
     container_name: lf9-smb
     restart: unless-stopped
@@ -163,6 +166,7 @@ services:
       MARIADB_ROOT_HOST: localhost
       DB_WEB_PASSWORD: ${DB_WEB_PASSWORD:?in .env setzen}
       DB_NEXTCLOUD_PASSWORD: ${DB_NEXTCLOUD_PASSWORD:?in .env setzen}
+      DB_ADMINER_PASSWORD: ${DB_ADMINER_PASSWORD:?in .env setzen}
     volumes:
       - db-data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d:ro
@@ -180,6 +184,8 @@ services:
     container_name: lf9-kuma
     restart: unless-stopped
     logging: *logging
+    dns:
+      - 10.20.30.2
     volumes:
       - kuma-data:/app/data
     networks:
@@ -187,7 +193,9 @@ services:
         ipv4_address: 10.20.30.3
 
   voip:
-    build: ./voip
+    build:
+      context: ./voip
+      network: host
     image: lf9-lab/asterisk:1
     container_name: lf9-voip
     restart: unless-stopped
@@ -230,13 +238,17 @@ services:
     environment:
       TZ: ${TZ:-Europe/Berlin}
       FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD:?in .env setzen}
-      FTLCONF_dns_upstreams: "10.20.30.2"
+      FTLCONF_dns_upstreams: "9.9.9.9"
+      FTLCONF_dns_revServers: "true,10.20.0.0/16,10.20.30.2#53,kopernikus-lab.lokal"
       FTLCONF_dns_listeningMode: all
     volumes:
       - pihole-data:/etc/pihole
     networks:
       br-web:
         ipv4_address: 10.20.20.3
+    depends_on:
+      dns:
+        condition: service_healthy
 
   nextcloud:
     image: nextcloud:35.0.2-apache
@@ -250,6 +262,9 @@ services:
     networks:
       br-web:
         ipv4_address: 10.20.20.5
+    depends_on:
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://127.0.0.1/status.php >/dev/null || exit 1"]
       interval: 20s
@@ -267,6 +282,9 @@ services:
     networks:
       br-web:
         ipv4_address: 10.20.20.6
+    depends_on:
+      db:
+        condition: service_healthy
 
   grafana:
     image: grafana/grafana:13.2
@@ -284,6 +302,9 @@ services:
     networks:
       br-infra:
         ipv4_address: 10.20.30.4
+    depends_on:
+      loki:
+        condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/api/health || exit 1"]
       interval: 15s
@@ -316,7 +337,8 @@ services:
       br-infra:
         ipv4_address: 10.20.30.6
     depends_on:
-      - loki
+      loki:
+        condition: service_started
 
   homepage:
     image: ghcr.io/gethomepage/homepage:v2.7.0
@@ -345,7 +367,9 @@ services:
 
   # --- Test-Client (nur Profil "test", nur für den lokalen Test) -------------
   client:
-    build: ./client
+    build:
+      context: ./client
+      network: host
     image: lf9-lab/client:1
     container_name: lf9-client
     profiles: ["test"]

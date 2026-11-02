@@ -14,7 +14,7 @@ RUN set -eux; \
     echo "${AST_SHA256}  asterisk-${AST_VERSION}.tar.gz" | sha256sum -c -; \
     tar xzf "asterisk-${AST_VERSION}.tar.gz"; \
     cd "asterisk-${AST_VERSION}"; \
-    ./configure --without-pjproject-bundled=no >/dev/null 2>&1 || ./configure >/dev/null; \
+    ./configure >/dev/null; \
     make -j"$(nproc)" >/dev/null; \
     make install >/dev/null; \
     make samples >/dev/null; \

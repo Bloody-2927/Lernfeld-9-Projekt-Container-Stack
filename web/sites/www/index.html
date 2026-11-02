@@ -12,9 +12,10 @@
     }
     @media (prefers-color-scheme: light) {
       :root { --bg: #f4f7fc; --panel: #ffffff; --line: #d8e1f2; --text: #0f1b33; --muted: #4a5d82; --accent: #0a74c9; --accent2: #1a9a4a; }
+      .btn:not(.ghost), .av { color: #fff; }
     }
     * { box-sizing: border-box; margin: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 70px; }
     body { font: 16px/1.6 system-ui, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
     a { color: inherit; }
     .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
@@ -53,7 +54,7 @@
     .av { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #04121f; background: linear-gradient(135deg, var(--accent), var(--accent2)); }
     footer { border-top: 1px solid var(--line); padding: 26px 0; color: var(--muted); font-size: .88rem; }
     footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-    @media (max-width: 640px) { nav ul { display: none; } .btn.ghost { margin: 10px 0 0; } }
+    @media (max-width: 640px) { nav { height: auto; flex-wrap: wrap; padding: 10px 0; gap: 6px; } nav ul { gap: 14px; flex-wrap: wrap; } .btn.ghost { margin: 10px 0 0; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   </style>
 </head>
@@ -76,10 +77,10 @@
     <section id="leistungen"><div class="wrap">
       <h2>Was wir tun</h2><p class="sub">Vom Netzwerkplan bis zum laufenden Betrieb.</p>
       <div class="grid">
-        <div class="card"><div class="ic">🌐</div><h3>Netzwerk &amp; Segmentierung</h3><p>Zonenmodell mit Firewall: Clients, Web, Dateien und Datenbank getrennt und nachvollziehbar.</p></div>
-        <div class="card"><div class="ic">🗂️</div><h3>Datei- &amp; Webdienste</h3><p>FTP, SMB und Webserver mit Benutzerrechten, Logging und Backup.</p></div>
-        <div class="card"><div class="ic">📈</div><h3>Monitoring</h3><p>Alle Dienste im Blick, Ausfälle werden sichtbar, bevor Nutzer sie melden.</p></div>
-        <div class="card"><div class="ic">🛡️</div><h3>Sicherheit</h3><p>Regelwerk, Protokolle und getrennte Datenhaltung schützen sensible Daten.</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🌐</div><h3>Netzwerk &amp; Segmentierung</h3><p>Zonenmodell mit Firewall: Clients, Web, Dateien und Datenbank getrennt und nachvollziehbar.</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🗂️</div><h3>Datei- &amp; Webdienste</h3><p>FTP, SMB und Webserver mit Benutzerrechten, Logging und Backup.</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">📈</div><h3>Monitoring</h3><p>Alle Dienste im Blick, Ausfälle werden sichtbar, bevor Nutzer sie melden.</p></div>
+        <div class="card"><div class="ic" aria-hidden="true">🛡️</div><h3>Sicherheit</h3><p>Regelwerk, Protokolle und getrennte Datenhaltung schützen sensible Daten.</p></div>
       </div>
     </div></section>
 

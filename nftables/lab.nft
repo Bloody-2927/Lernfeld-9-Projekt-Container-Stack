@@ -43,6 +43,9 @@ table inet lab {
         iifname "eth1" oifname "br-files" ip daddr 10.20.40.3 tcp dport 445 accept comment "SMB"
         iifname "eth1" oifname "br-voip"  ip daddr 10.20.60.2 meta l4proto udp th dport { 5060, 10000-10100 } accept comment "VoIP"
 
+        # --- Rückrichtung VoIP: Asterisk ruft die registrierten Clients an (INVITE, RTP), ohne Conntrack-Eintrag nötig
+        iifname "br-voip"  oifname "eth1"     ip saddr 10.20.60.2 udp sport { 5060, 10000-10100 } accept comment "VoIP: Asterisk -> Clients"
+
         # --- Zone zu Zone ------------------------------------------------------
         iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.2 ip daddr 10.20.30.3 tcp dport 3001 accept comment "Caddy -> Kuma"
         iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.2 ip daddr { 10.20.30.4, 10.20.30.8 } tcp dport 3000 accept comment "Caddy -> Grafana, Homepage"
@@ -50,7 +53,13 @@ table inet lab {
         iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.3 ip daddr 10.20.30.2 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole -> bind9 (Weitergabe)"
         iifname "br-web"   oifname "br-db"    ip saddr { 10.20.20.4, 10.20.20.5, 10.20.20.6 } ip daddr 10.20.50.2 tcp dport 3306 accept comment "nginx/Nextcloud/Adminer -> MariaDB"
         iifname "br-infra" oifname "br-db"    ip saddr 10.20.30.3 ip daddr 10.20.50.2 tcp dport 3306 accept comment "Kuma Port-Test"
-        iifname "br-infra" oifname { "br-web", "br-files", "br-voip" } ip saddr 10.20.30.3 icmp type echo-request accept comment "Kuma Ping"
+        iifname "br-infra" oifname { "br-web", "br-files", "br-voip", "br-db" } ip saddr 10.20.30.3 icmp type echo-request accept comment "Kuma Ping"
+        iifname "br-infra" oifname "br-web"   ip saddr 10.20.30.3 ip daddr { 10.20.20.2, 10.20.20.3, 10.20.20.4, 10.20.20.5 } tcp dport 80 accept comment "Kuma HTTP-Monitore"
+        iifname "br-infra" oifname "br-web"   ip saddr 10.20.30.3 ip daddr 10.20.20.6 tcp dport 8080 accept comment "Kuma Monitor Adminer"
+        iifname "br-infra" oifname "br-web"   ip saddr 10.20.30.3 ip daddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Kuma DNS-Monitor Pi-hole"
+        iifname "br-infra" oifname "br-files" ip saddr 10.20.30.3 ip daddr 10.20.40.2 tcp dport 21 accept comment "Kuma FTP-Monitor"
+        iifname "br-infra" oifname "br-files" ip saddr 10.20.30.3 ip daddr 10.20.40.3 tcp dport 445 accept comment "Kuma SMB-Monitor"
+        iifname "br-infra" oifname "br-voip"  ip saddr 10.20.30.3 ip daddr 10.20.60.2 udp dport 5060 accept comment "Kuma SIP-Monitor"
 
         # --- Internet (nur Updates, nach Freigabe: Zeile aktivieren) -------------
         # iifname { "br-web" } oifname "eth0" ip saddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole Upstream"

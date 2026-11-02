@@ -26,11 +26,9 @@
         description: Docker per Weboberfläche
 - Dateien und Daten:
     - FTP:
-        href: ftp://ftp.kopernikus-lab.lokal/
-        description: vsftpd, anonym und user1/user2
+        description: ftp://ftp.kopernikus-lab.lokal (vsftpd, anonym und user1/user2)
     - Dateiserver (SMB):
-        href: smb://files.kopernikus-lab.lokal/pub
-        description: Samba, Freigaben pub, Benutzer1, Benutzer2
+        description: \\files.kopernikus-lab.lokal\pub (Samba, Freigaben pub, Benutzer1, Benutzer2)
     - Datenbank-Weboberfläche:
         href: http://dbadmin.kopernikus-lab.lokal/
         description: Adminer zu MariaDB (Zone 50)
