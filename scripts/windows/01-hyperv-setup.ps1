@@ -36,7 +36,7 @@ if (-not (Get-NetIPAddress -InterfaceAlias $ifAlias -IPAddress 192.168.10.10 -Er
     Write-Host 'PC-Adresse 192.168.10.10/24 gesetzt'
 }
 if (-not (Get-NetRoute -DestinationPrefix '10.20.0.0/16' -ErrorAction SilentlyContinue)) {
-    New-NetRoute -DestinationPrefix '10.20.0.0/16' -InterfaceAlias $ifAlias -NextHop 192.168.10.1 -PolicyStore PersistentStore | Out-Null
+    New-NetRoute -DestinationPrefix '10.20.0.0/16' -InterfaceAlias $ifAlias -NextHop 192.168.10.1 | Out-Null
     Write-Host 'Route 10.20.0.0/16 via 192.168.10.1 gesetzt (persistent)'
 }
 # Windows stuft ein neues Netz als "öffentlich" ein; für Ping und SMB-Tests ggf. auf privat stellen
