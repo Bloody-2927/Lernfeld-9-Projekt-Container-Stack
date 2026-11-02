@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intranet – Heiner-IT Systems</title>
+  <style>
+    :root { --bg:#0b1220; --panel:#121c30; --line:#22304d; --text:#e8eefc; --muted:#9db0d3; --a:#4cc9f0; --b:#7ae582; --w:#ffd166; }
+    * { box-sizing:border-box; margin:0; }
+    body { font:16px/1.6 system-ui,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); }
+    .wrap { max-width:960px; margin:0 auto; padding:0 20px; }
+    header { padding:44px 0 10px; }
+    .badge { display:inline-block; padding:3px 12px; border-radius:99px; background:#f7258522; color:#ff7aa8; border:1px solid #f7258566; font-size:.8rem; letter-spacing:.06em; }
+    h1 { font-size:2rem; margin:12px 0 4px; } .sub { color:var(--muted); }
+    h2 { font-size:1.15rem; margin:34px 0 12px; }
+    .grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+    .card h3 { font-size:1rem; display:flex; justify-content:space-between; }
+    .card p { color:var(--muted); font-size:.9rem; }
+    code { background:#ffffff12; padding:1px 6px; border-radius:5px; font-size:.85rem; color:var(--text); }
+    table { width:100%; border-collapse:collapse; font-size:.92rem; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    th,td { text-align:left; padding:9px 14px; border-bottom:1px solid var(--line); } th { color:var(--muted); font-weight:600; }
+    td.ok { color:var(--b); } td.no { color:#ff7aa8; }
+    a { color:var(--a); } footer { margin:44px 0 28px; color:var(--muted); font-size:.85rem; border-top:1px solid var(--line); padding-top:16px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="badge">INTERN – nur aus den Client-VMs</span>
+      <h1>Intranet des Übungslabors</h1>
+      <p class="sub">intern.kopernikus-lab.lokal · Heiner-IT Systems GmbH · Dienste, Adressen und Regeln auf einen Blick</p>
+    </header>
+
+    <h2>Dienste im Labor</h2>
+    <div class="grid">
+      <div class="card"><h3>Monitoring</h3><p>Uptime Kuma, alle Container im Blick.</p><p><a href="http://kuma.kopernikus-lab.lokal:3001/">kuma.kopernikus-lab.lokal:3001</a></p></div>
+      <div class="card"><h3>DNS</h3><p>bind9, Zone <code>kopernikus-lab.lokal</code>.</p><p><code>10.20.30.2</code> · Test: <code>dig www.kopernikus-lab.lokal</code></p></div>
+      <div class="card"><h3>Webserver</h3><p>Zwei öffentliche Seiten plus dieses Intranet.</p><p><a href="http://www.kopernikus-lab.lokal/">www</a> · <a href="http://web2.kopernikus-lab.lokal/">web2</a> · <a href="http://www.kopernikus-lab.lokal/spiel/">Minispiel</a></p></div>
+      <div class="card"><h3>FTP</h3><p>vsftpd, anonym lesend, <code>user1</code> und <code>user2</code> mit eigenem Bereich.</p><p><code>ftp://ftp.kopernikus-lab.lokal</code></p></div>
+      <div class="card"><h3>Dateiserver (SMB)</h3><p>Freigaben <code>pub</code>, <code>Benutzer1</code>, <code>Benutzer2</code>.</p><p><code>\files.kopernikus-lab.lokal\pub</code></p></div>
+      <div class="card"><h3>Telefonie</h3><p>Asterisk, Nebenstellen <code>1001</code>, <code>1002</code>, Echotest <code>600</code>.</p><p><code>voip.kopernikus-lab.lokal</code> (UDP 5060)</p></div>
+    </div>
+
+    <h2>Wer darf wohin? (Firewall-Regelwerk, Auszug)</h2>
+    <table>
+      <tr><th>Von</th><th>Nach</th><th>Ergebnis</th></tr>
+      <tr><td>Clients</td><td>DNS, Web (80), FTP, SMB, SIP, Monitoring</td><td class="ok">erlaubt</td></tr>
+      <tr><td>Clients</td><td>Datenbank (Zone 50)</td><td class="no">abgelehnt (Reject)</td></tr>
+      <tr><td>Web-Zone</td><td>Datenbank (3306)</td><td class="ok">nur nginx und Nextcloud</td></tr>
+      <tr><td>Server-Zone</td><td>andere Server-Zone</td><td class="no">verworfen (Drop), mit Log</td></tr>
+      <tr><td>Windows-PC</td><td>dieses Intranet</td><td class="no">403 (nur Client-VMs)</td></tr>
+    </table>
+
+    <footer>Keine Zugangsdaten auf dieser Seite. Schulprojekt, fiktive Firma.</footer>
+  </div>
+</body>
+</html>

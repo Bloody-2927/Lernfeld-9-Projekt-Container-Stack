@@ -1,6 +1,6 @@
 $TTL 3600
 @       IN SOA  dns.kopernikus-lab.lokal. admin.kopernikus-lab.lokal. (
-                2026110301 ; Seriennummer (JJJJMMTTNN)
+                2026110302 ; Seriennummer (JJJJMMTTNN)
                 3600       ; Refresh
                 900        ; Retry
                 604800     ; Expire
@@ -23,6 +23,7 @@ voip    IN A    10.20.60.2
 ; Websites: Muss-Pfad direkt auf nginx
 www     IN A    10.20.20.4
 web2    IN A    10.20.20.4
+intern  IN A    10.20.20.4
 
 ; Komfort-Pfad über Caddy
 cloud   IN CNAME caddy

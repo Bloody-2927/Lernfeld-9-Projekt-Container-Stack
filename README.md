@@ -39,7 +39,7 @@ Der Test-Client (`--profile test`) hängt in allen Zonen. Firewall und Routing z
 ## Aufbau der Firewall-VM (Hyper-V)
 
 1. Debian-12-Netinst-ISO herunterladen (amd64).
-2. PowerShell **als Administrator**: `scripts\windows\01-hyperv-setup.ps1 -IsoPath <ISO> [-WithTestClient]` (Switch `labnet-intern`, Route 10.20.0.0/16, VM `lf9-fw`).
+2. PowerShell **als Administrator**: `scripts\windows\01-hyperv-setup.ps1 -IsoPath <ISO> [-WithClients]` (Switch `labnet-intern`, Route 10.20.0.0/16, VM `lf9-fw`).
 3. Debian installieren (nur SSH-Server und Systemwerkzeuge). `eth0` = DHCP (Default Switch), `eth1` = 192.168.10.1/24 statisch.
 4. In der VM: Repo klonen, `.env` anlegen, `sudo ./setup.sh`, dann `docker compose up -d --build`.
 5. Machbarkeitstest 1.0: vom PC `ping 192.168.10.1` und TCP-Zugriff auf einen Container (z. B. `curl http://10.20.20.4`).

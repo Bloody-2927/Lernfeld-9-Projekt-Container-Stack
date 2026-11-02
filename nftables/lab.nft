@@ -35,6 +35,7 @@ table inet lab {
         # --- Clients (eth1) -> Zonen -----------------------------------------
         iifname "eth1" oifname "br-infra" ip daddr 10.20.30.2 meta l4proto { tcp, udp } th dport 53 accept comment "Muss-Pfad: DNS bind9"
         iifname "eth1" oifname "br-web"   ip daddr 10.20.20.4 tcp dport 80 accept comment "Muss-Pfad: http nginx"
+        iifname "eth1" oifname "br-infra" ip daddr 10.20.30.3 tcp dport 3001 accept comment "Monitoring: Uptime Kuma (Screencast)"
         iifname "eth1" oifname "br-web"   ip daddr 10.20.20.2 tcp dport { 80, 443 } accept comment "Komfort: Caddy"
         iifname "eth1" oifname "br-web"   ip daddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Komfort: Pi-hole"
         iifname "eth1" oifname "br-files" ip daddr 10.20.40.2 tcp dport { 21, 21100-21110 } accept comment "FTP"

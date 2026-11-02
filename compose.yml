@@ -1,7 +1,7 @@
 name: lf9-lab
 
 # Laborübungsplatz LF9, Zonenmodell nach Pflichtenheft V1.2 (Kapitel 3 bis 6)
-# Profile: ohne Angabe laufen Pflicht- und Wahldienste (dns, web, ftp, smb, db, kuma);
+# Profile: ohne Angabe laufen Pflicht- und Wahldienste (dns, web, ftp, smb, db, kuma, voip);
 #          "test" startet zusätzlich den Test-Client für tests/run-tests.sh.
 
 x-logging: &logging
@@ -51,6 +51,17 @@ networks:
       config:
         - subnet: 10.20.50.0/24
           gateway: 10.20.50.1
+
+  br-voip:
+    name: br-voip
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-voip
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+    ipam:
+      config:
+        - subnet: 10.20.60.0/24
+          gateway: 10.20.60.1
 
 volumes:
   ftp-data:
@@ -169,6 +180,24 @@ services:
       br-infra:
         ipv4_address: 10.20.30.3
 
+  voip:
+    build: ./voip
+    image: lf9-lab/asterisk:1
+    container_name: lf9-voip
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      SIP_1001_PASSWORD: ${SIP_1001_PASSWORD:?in .env setzen}
+      SIP_1002_PASSWORD: ${SIP_1002_PASSWORD:?in .env setzen}
+    networks:
+      br-voip:
+        ipv4_address: 10.20.60.2
+    healthcheck:
+      test: ["CMD-SHELL", "asterisk -rx 'core show uptime' >/dev/null 2>&1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
   # --- Test-Client (nur Profil "test", nur für den lokalen Test) -------------
   client:
     build: ./client
@@ -186,3 +215,5 @@ services:
         ipv4_address: 10.20.40.250
       br-db:
         ipv4_address: 10.20.50.250
+      br-voip:
+        ipv4_address: 10.20.60.250

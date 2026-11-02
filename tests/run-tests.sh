@@ -16,7 +16,7 @@ expect_eq() { [ "$2" = "$3" ] && ok "$1" || fail "$1" "erwartet '$3', erhalten '
 expect_has() { echo "$2" | grep -q -- "$3" && ok "$1" || fail "$1" "erwartet Teilstring '$3' in: $2"; }
 
 echo "== Container-Gesundheit"
-for n in lf9-dns lf9-web lf9-ftp lf9-smb lf9-db; do
+for n in lf9-dns lf9-web lf9-ftp lf9-smb lf9-db lf9-voip; do
   for _ in $(seq 1 30); do
     s=$(docker inspect -f '{{.State.Health.Status}}' "$n" 2>/dev/null || echo "fehlt")
     [ "$s" = "healthy" ] && break
@@ -66,6 +66,17 @@ grants=$(docker compose exec -T db mariadb -uroot -p"${MARIADB_ROOT_PASSWORD}" -
 expect_has "web: ALL nur auf webapp.*" "$grants" "webapp"
 roots=$(docker compose exec -T db mariadb -uroot -p"${MARIADB_ROOT_PASSWORD}" -N -e "SELECT host FROM mysql.user WHERE user='root'" 2>&1 | sort -u | tr '\n' ' ')
 expect_eq "root nur auf localhost" "$(echo $roots)" "localhost"
+
+echo "== T-07 VoIP (Asterisk, SIP)"
+expect_has "SIP erreichbar (OPTIONS wird beantwortet)" "$(c sipsak -s sip:1001@10.20.60.2 -vv 2>&1)" "SIP/2.0 401"
+expect_has "Nebenstellen 1001 und 1002 konfiguriert" "$(docker compose exec -T voip asterisk -rx 'pjsip show endpoints' 2>&1)" "1002"
+expect_has "Wählplan: Nebenstellen und Echotest 600" "$(docker compose exec -T voip asterisk -rx 'dialplan show intern' 2>&1)" "'600'"
+docker compose exec -T voip asterisk -rx "database deltree registrar/contact" >/dev/null 2>&1
+docker compose cp tests/sip/register.py client:/tmp/register.py >/dev/null 2>&1
+expect_eq "falsches SIP-Kennwort abgelehnt (401)" "$(c python3 /tmp/register.py 1002 falsch | tr -d '')" "401"
+if docker compose exec -T voip asterisk -rx 'pjsip show contacts' | grep -q "1002/sip"; then fail "falsches Kennwort hat registriert"; else ok "falsches Kennwort: keine Registrierung"; fi
+expect_eq "richtiges Kennwort: Nebenstelle 1001 angemeldet (200)" "$(c python3 /tmp/register.py 1001 "${SIP_1001_PASSWORD}" | tr -d '')" "200"
+expect_has "1001 steht in der Kontaktliste" "$(docker compose exec -T voip asterisk -rx 'pjsip show contacts' 2>&1)" "1001/sip"
 
 echo
 echo "Ergebnis: $PASS bestanden, $FAIL fehlgeschlagen"
