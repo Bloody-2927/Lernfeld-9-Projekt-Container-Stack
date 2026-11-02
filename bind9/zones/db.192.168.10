@@ -3,4 +3,6 @@ $TTL 3600
     IN NS  dns.kopernikus-lab.lokal.
 1   IN PTR fw.kopernikus-lab.lokal.
 10  IN PTR pc.kopernikus-lab.lokal.
-11  IN PTR testclient.kopernikus-lab.lokal.
+11  IN PTR client1.kopernikus-lab.lokal.
+12  IN PTR client2.kopernikus-lab.lokal.
+13  IN PTR client-gui.kopernikus-lab.lokal.
