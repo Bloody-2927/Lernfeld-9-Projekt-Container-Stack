@@ -3,10 +3,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Website 2 – Übungslabor</title>
+  <title>Kopernikus Lab – Website 2</title>
+  <meta name="description" content="Zweite Beispielwebsite im Übungslabor: Dienste-Übersicht als Sonnensystem.">
+  <style>
+    :root { --bg: #070a14; --text: #eaf0ff; --muted: #8fa0c8; --sun: #ffd166; --line: #1d2742; --panel: #0e1428; }
+    * { box-sizing: border-box; margin: 0; }
+    body { font: 16px/1.6 system-ui, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden;
+      background-image: radial-gradient(1px 1px at 20% 30%, #fff8, transparent), radial-gradient(1px 1px at 70% 20%, #fff6, transparent),
+        radial-gradient(1.5px 1.5px at 40% 80%, #fff7, transparent), radial-gradient(1px 1px at 85% 65%, #fff6, transparent), radial-gradient(1px 1px at 10% 70%, #fff5, transparent);
+      background-size: 420px 420px; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+    header { text-align: center; padding: 56px 0 8px; }
+    header small { color: var(--muted); letter-spacing: .2em; text-transform: uppercase; font-size: .78rem; }
+    h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin-top: 8px; }
+    header p { color: var(--muted); max-width: 52ch; margin: 12px auto 0; }
+    .system { --s: min(86vw, 520px); position: relative; width: var(--s); height: var(--s); margin: 36px auto; }
+    .sun { position: absolute; inset: 50% auto auto 50%; width: 15%; height: 15%; transform: translate(-50%, -50%); border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff3b0, var(--sun) 55%, #f08a24); box-shadow: 0 0 60px 18px #ffb7034d; animation: pulse 4s ease-in-out infinite; }
+    @keyframes pulse { 50% { box-shadow: 0 0 80px 26px #ffb70370; } }
+    .orbit { position: absolute; inset: 50% auto auto 50%; border: 1px dashed var(--line); border-radius: 50%; transform: translate(-50%, -50%); animation: spin linear infinite; }
+    .orbit b { position: absolute; top: -9px; left: 50%; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 14px var(--c); }
+    .o1 { width: 32%; height: 32%; animation-duration: 9s; }
+    .o2 { width: 52%; height: 52%; animation-duration: 16s; }
+    .o3 { width: 72%; height: 72%; animation-duration: 25s; }
+    .o4 { width: 92%; height: 92%; animation-duration: 36s; }
+    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+    .system:hover .orbit { animation-play-state: paused; }
+    .list { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); padding-bottom: 40px; }
+    .svc { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 12px; padding: 16px 18px; }
+    .svc h3 { font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .svc h3 em { font-style: normal; font-size: .75rem; color: #7ae582; display: flex; align-items: center; gap: 6px; }
+    .svc h3 em::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7ae582; animation: blink 2s infinite; }
+    @keyframes blink { 50% { opacity: .3; } }
+    .svc p { color: var(--muted); font-size: .88rem; margin-top: 4px; }
+    .svc code { font-size: .8rem; color: var(--text); background: #ffffff10; padding: 1px 6px; border-radius: 5px; }
+    footer { border-top: 1px solid var(--line); text-align: center; color: var(--muted); font-size: .85rem; padding: 22px 0; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
 </head>
 <body>
-  <h1>Website 2</h1>
-  <p>web2.kopernikus-lab.lokal – zweiter virtueller Host auf demselben Webserver.</p>
+  <header class="wrap">
+    <small>web2.kopernikus-lab.lokal</small>
+    <h1>Das Kopernikus-Lab</h1>
+    <p>Alle Dienste des Übungslabors kreisen um eine Mitte: die Firewall. Mit der Maus über das Bild gehen, um die Bahnen anzuhalten.</p>
+  </header>
+
+  <div class="system" aria-hidden="true">
+    <div class="sun"></div>
+    <div class="orbit o1"><b style="--c:#4cc9f0"></b></div>
+    <div class="orbit o2"><b style="--c:#7ae582"></b></div>
+    <div class="orbit o3"><b style="--c:#f72585"></b></div>
+    <div class="orbit o4"><b style="--c:#b794f6"></b></div>
+  </div>
+
+  <main class="wrap">
+    <div class="list">
+      <div class="svc" style="--c:#4cc9f0"><h3>Web <em>online</em></h3><p>nginx mit zwei virtuellen Hosts.</p><p><code>10.20.20.0/24</code></p></div>
+      <div class="svc" style="--c:#7ae582"><h3>Infrastruktur <em>online</em></h3><p>DNS (bind9) und Monitoring (Uptime Kuma).</p><p><code>10.20.30.0/24</code></p></div>
+      <div class="svc" style="--c:#f72585"><h3>Dateien <em>online</em></h3><p>FTP und SMB mit Benutzerrechten.</p><p><code>10.20.40.0/24</code></p></div>
+      <div class="svc" style="--c:#b794f6"><h3>Datenbank <em>online</em></h3><p>MariaDB, nur aus der Web-Zone erreichbar.</p><p><code>10.20.50.0/24</code></p></div>
+    </div>
+  </main>
+
+  <footer>Website 2 · zweiter virtueller Host auf demselben nginx · Heiner-IT Systems GmbH (Schulprojekt)</footer>
 </body>
 </html>

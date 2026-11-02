@@ -3,10 +3,104 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Website 1 – Übungslabor</title>
+  <title>Heiner-IT Systems GmbH – Website 1</title>
+  <meta name="description" content="Beispielwebsite der Heiner-IT Systems GmbH, gehostet im Übungslabor der Kopernikus Hochschule.">
+  <style>
+    :root {
+      --bg: #0b1220; --panel: #121c30; --line: #22304d;
+      --text: #e8eefc; --muted: #9db0d3; --accent: #4cc9f0; --accent2: #7ae582;
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #f4f7fc; --panel: #ffffff; --line: #d8e1f2; --text: #0f1b33; --muted: #4a5d82; --accent: #0a74c9; --accent2: #1a9a4a; }
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body { font: 16px/1.6 system-ui, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
+    a { color: inherit; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+    header { position: sticky; top: 0; z-index: 5; backdrop-filter: blur(10px); background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line); }
+    nav { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .logo { font-weight: 700; letter-spacing: .02em; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .logo i { width: 14px; height: 14px; border-radius: 4px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: inline-block; }
+    nav ul { display: flex; gap: 22px; list-style: none; padding: 0; }
+    nav ul a { text-decoration: none; color: var(--muted); font-size: .95rem; }
+    nav ul a:hover { color: var(--text); }
+    .hero { padding: 96px 0 72px; position: relative; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 560px; height: 560px; border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 35%, transparent), transparent 65%); filter: blur(10px); animation: drift 14s ease-in-out infinite alternate; }
+    @keyframes drift { to { transform: translate(-60px, 40px) scale(1.15); } }
+    .tag { display: inline-block; padding: 4px 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: .85rem; margin-bottom: 20px; }
+    h1 { font-size: clamp(2.2rem, 6vw, 4rem); line-height: 1.1; max-width: 16ch; position: relative; }
+    h1 span { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { color: var(--muted); max-width: 52ch; margin: 22px 0 32px; font-size: 1.1rem; position: relative; }
+    .btn { display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 600; text-decoration: none; background: var(--accent); color: #04121f; transition: transform .15s; position: relative; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); margin-left: 10px; }
+    section { padding: 64px 0; }
+    h2 { font-size: 1.7rem; margin-bottom: 8px; }
+    .sub { color: var(--muted); margin-bottom: 32px; }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px; transition: transform .2s, border-color .2s; }
+    .card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .card .ic { font-size: 1.8rem; margin-bottom: 10px; }
+    .card h3 { font-size: 1.1rem; margin-bottom: 6px; }
+    .card p { color: var(--muted); font-size: .95rem; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 18px; text-align: center; }
+    .stats b { display: block; font-size: 2.4rem; color: var(--accent); }
+    .stats span { color: var(--muted); font-size: .9rem; }
+    .team { display: flex; gap: 18px; flex-wrap: wrap; }
+    .person { flex: 1 1 240px; display: flex; gap: 14px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+    .av { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #04121f; background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+    footer { border-top: 1px solid var(--line); padding: 26px 0; color: var(--muted); font-size: .88rem; }
+    footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 640px) { nav ul { display: none; } .btn.ghost { margin: 10px 0 0; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
 </head>
 <body>
-  <h1>Website 1</h1>
-  <p>www.kopernikus-lab.lokal – Webserver des Übungslabors der Kopernikus Hochschule.</p>
+  <header>
+    <div class="wrap"><nav>
+      <a class="logo" href="#"><i></i>Heiner-IT Systems</a>
+      <ul><li><a href="#leistungen">Leistungen</a></li><li><a href="#zahlen">Zahlen</a></li><li><a href="#team">Team</a></li></ul>
+    </nav></div>
+  </header>
+
+  <main>
+    <div class="hero"><div class="wrap">
+      <span class="tag">www.kopernikus-lab.lokal</span>
+      <h1>IT, die einfach <span>läuft.</span></h1>
+      <p class="lead">Die Heiner-IT Systems GmbH plant, baut und betreut Netzwerke, Server und Arbeitsplätze für Schulen und kleine Unternehmen.</p>
+      <a class="btn" href="#leistungen">Leistungen ansehen</a><a class="btn ghost" href="#team">Das Team</a>
+    </div></div>
+
+    <section id="leistungen"><div class="wrap">
+      <h2>Was wir tun</h2><p class="sub">Vom Netzwerkplan bis zum laufenden Betrieb.</p>
+      <div class="grid">
+        <div class="card"><div class="ic">🌐</div><h3>Netzwerk &amp; Segmentierung</h3><p>Zonenmodell mit Firewall: Clients, Web, Dateien und Datenbank getrennt und nachvollziehbar.</p></div>
+        <div class="card"><div class="ic">🗂️</div><h3>Datei- &amp; Webdienste</h3><p>FTP, SMB und Webserver mit Benutzerrechten, Logging und Backup.</p></div>
+        <div class="card"><div class="ic">📈</div><h3>Monitoring</h3><p>Alle Dienste im Blick, Ausfälle werden sichtbar, bevor Nutzer sie melden.</p></div>
+        <div class="card"><div class="ic">🛡️</div><h3>Sicherheit</h3><p>Regelwerk, Protokolle und getrennte Datenhaltung schützen sensible Daten.</p></div>
+      </div>
+    </div></section>
+
+    <section id="zahlen"><div class="wrap">
+      <div class="stats">
+        <div><b>6</b><span>Netzwerkzonen</span></div>
+        <div><b>10+</b><span>Dienste im Stack</span></div>
+        <div><b>31</b><span>automatische Tests</span></div>
+        <div><b>24/7</b><span>Überwachung</span></div>
+      </div>
+    </div></section>
+
+    <section id="team"><div class="wrap">
+      <h2>Projektleitung</h2><p class="sub">Klasse 11IT2B, Kopernikus Hochschule.</p>
+      <div class="team">
+        <div class="person"><div class="av">A</div><div><b>Projektleitung A</b><br><span style="color:var(--muted)">Team Heiner-IT</span></div></div>
+        <div class="person"><div class="av">B</div><div><b>Projektleitung B</b><br><span style="color:var(--muted)">Team Heiner-IT</span></div></div>
+      </div>
+    </div></section>
+  </main>
+
+  <footer><div class="wrap"><span>© 2026 Heiner-IT Systems GmbH (Schulprojekt, fiktiv)</span><span>Website 1 · virtueller Host www</span></div></footer>
 </body>
 </html>
