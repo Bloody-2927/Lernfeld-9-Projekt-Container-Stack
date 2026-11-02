@@ -1,0 +1,23 @@
+// Autoritativer Nameserver für die Laborzone (keine Rekursion, Upstream macht Pi-hole)
+options {
+    directory "/var/cache/bind";
+    listen-on { any; };
+    listen-on-v6 { none; };
+    recursion no;
+    allow-query { 10.20.0.0/16; 192.168.10.0/24; 127.0.0.1; };
+    allow-transfer { none; };
+    querylog yes;
+    dnssec-validation no;
+};
+
+logging {
+    channel stderr_log {
+        stderr;
+        severity info;
+        print-time yes;
+        print-severity yes;
+        print-category yes;
+    };
+    category default { stderr_log; };
+    category queries { stderr_log; };
+};

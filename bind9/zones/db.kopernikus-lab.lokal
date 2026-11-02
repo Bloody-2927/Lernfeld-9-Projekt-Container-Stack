@@ -1,0 +1,35 @@
+$TTL 3600
+@       IN SOA  dns.kopernikus-lab.lokal. admin.kopernikus-lab.lokal. (
+                2026110301 ; Seriennummer (JJJJMMTTNN)
+                3600       ; Refresh
+                900        ; Retry
+                604800     ; Expire
+                300 )      ; Negativ-TTL
+        IN NS   dns.kopernikus-lab.lokal.
+
+; Server (Zone 20 Web, 30 Infrastruktur, 40 Fileserver, 50 Datenbank, 60 VoIP)
+dns     IN A    10.20.30.2
+kuma    IN A    10.20.30.3
+loki    IN A    10.20.30.4
+caddy   IN A    10.20.20.2
+pihole  IN A    10.20.20.3
+web     IN A    10.20.20.4
+nextcloud IN A  10.20.20.5
+ftp     IN A    10.20.40.2
+files   IN A    10.20.40.3
+db      IN A    10.20.50.2
+voip    IN A    10.20.60.2
+
+; Websites: Muss-Pfad direkt auf nginx
+www     IN A    10.20.20.4
+web2    IN A    10.20.20.4
+
+; Komfort-Pfad über Caddy
+cloud   IN CNAME caddy
+monitor IN CNAME caddy
+logs    IN CNAME caddy
+
+; Clients und Firewall
+fw      IN A    192.168.10.1
+pc      IN A    192.168.10.10
+testclient IN A 192.168.10.11

@@ -1,0 +1,69 @@
+#!/usr/sbin/nft -f
+# Firewall der Firewall-VM (Pflichtenheft Kap. 3.1 und 6.2).
+# STATUS: ENTWURF, nicht getestet. Wird im Machbarkeitstest (1.0) und in T-06/T-13 geprüft.
+# Annahme: Docker verwaltet keine eigenen iptables-Regeln (/etc/docker/daemon.json: "iptables": false),
+# Weiterleitung und Masquerade übernimmt allein diese Tabelle. Alternative laut Pflichtenheft: Docker-Regeln
+# behalten und diese Regeln in DOCKER-USER pflegen. Die Entscheidung fällt nach dem Machbarkeitstest.
+#
+# Schnittstellen: eth1 = Clients (192.168.10.0/24), eth0 = Uplink (NAT), br-web, br-infra, br-files, br-db, br-voip.
+# Bewusst KEIN "flush ruleset": es wird nur die Tabelle "lab" neu geladen.
+
+table inet lab
+delete table inet lab
+
+table inet lab {
+
+    # Verkehr zur Firewall-VM selbst
+    chain input {
+        type filter hook input priority 0; policy drop;
+        ct state established,related accept
+        ct state invalid drop
+        iif lo accept
+        iifname "eth1" tcp dport 22 accept comment "SSH vom Client-Netz"
+        iifname "eth1" icmp type echo-request accept
+        iifname { "br-web", "br-infra", "br-files", "br-db", "br-voip" } icmp type echo-request accept
+        # DNS-Auflösung der Container über den Host ist nicht vorgesehen (bind9 antwortet selbst)
+        limit rate 10/second log prefix "FW-INPUT-DROP " counter drop
+    }
+
+    # Verkehr zwischen den Zonen
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+        ct state established,related accept
+        ct state invalid drop
+
+        # --- Clients (eth1) -> Zonen -----------------------------------------
+        iifname "eth1" oifname "br-infra" ip daddr 10.20.30.2 meta l4proto { tcp, udp } th dport 53 accept comment "Muss-Pfad: DNS bind9"
+        iifname "eth1" oifname "br-web"   ip daddr 10.20.20.4 tcp dport 80 accept comment "Muss-Pfad: http nginx"
+        iifname "eth1" oifname "br-web"   ip daddr 10.20.20.2 tcp dport { 80, 443 } accept comment "Komfort: Caddy"
+        iifname "eth1" oifname "br-web"   ip daddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Komfort: Pi-hole"
+        iifname "eth1" oifname "br-files" ip daddr 10.20.40.2 tcp dport { 21, 21100-21110 } accept comment "FTP"
+        iifname "eth1" oifname "br-files" ip daddr 10.20.40.3 tcp dport 445 accept comment "SMB"
+        iifname "eth1" oifname "br-voip"  ip daddr 10.20.60.2 meta l4proto udp th dport { 5060, 3478, 10000-10100 } accept comment "VoIP"
+        iifname "eth1" oifname "br-voip"  ip daddr 10.20.60.2 tcp dport 5060 accept comment "SIP TCP"
+
+        # --- Zone zu Zone ------------------------------------------------------
+        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.3 ip daddr 10.20.30.2 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole -> bind9"
+        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.2 ip daddr { 10.20.30.3, 10.20.30.4 } tcp dport { 3001, 3000 } accept comment "Caddy -> Kuma/Grafana"
+        iifname "br-web"   oifname "br-db"    ip saddr { 10.20.20.4, 10.20.20.5 } ip daddr 10.20.50.2 tcp dport 3306 accept comment "Web/Nextcloud -> MariaDB"
+        iifname "br-infra" oifname "br-db"    ip saddr 10.20.30.3 ip daddr 10.20.50.2 tcp dport 3306 accept comment "Kuma Port-Test"
+        iifname "br-infra" oifname { "br-web", "br-files", "br-voip" } ip saddr 10.20.30.3 icmp type echo-request accept comment "Kuma Ping"
+
+        # --- Internet (nur Updates, nach Freigabe: Zeile aktivieren) -------------
+        # iifname { "br-web" } oifname "eth0" ip saddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole Upstream"
+
+        # Aus der Client-Zone wird abgelehnt (sofortige Rückmeldung), zwischen Server-Zonen still verworfen
+        iifname "eth1" limit rate 10/second log prefix "FW-REJECT " counter reject with icmpx type admin-prohibited
+        limit rate 10/second log prefix "FW-DROP " counter drop
+    }
+
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+
+    # Masquerade nur Richtung Uplink (Docker-Masquerade der Zonennetze ist aus)
+    chain postrouting {
+        type nat hook postrouting priority 100; policy accept;
+        oifname "eth0" masquerade
+    }
+}

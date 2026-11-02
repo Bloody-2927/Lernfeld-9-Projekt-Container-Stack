@@ -1,0 +1,8 @@
+# Zugangsdaten und Laufzeitdaten nie committen
+.env
+backups/
+*.pcap
+*.pcapng
+*.log
+*.vhdx
+*.iso

@@ -1,0 +1,188 @@
+name: lf9-lab
+
+# Laborübungsplatz LF9, Zonenmodell nach Pflichtenheft V1.2 (Kapitel 3 bis 6)
+# Profile: ohne Angabe laufen Pflicht- und Wahldienste (dns, web, ftp, smb, db, kuma);
+#          "test" startet zusätzlich den Test-Client für tests/run-tests.sh.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+networks:
+  br-web:
+    name: br-web
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-web
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+    ipam:
+      config:
+        - subnet: 10.20.20.0/24
+          gateway: 10.20.20.1
+  br-infra:
+    name: br-infra
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-infra
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+    ipam:
+      config:
+        - subnet: 10.20.30.0/24
+          gateway: 10.20.30.1
+  br-files:
+    name: br-files
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-files
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+    ipam:
+      config:
+        - subnet: 10.20.40.0/24
+          gateway: 10.20.40.1
+  br-db:
+    name: br-db
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-db
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+    ipam:
+      config:
+        - subnet: 10.20.50.0/24
+          gateway: 10.20.50.1
+
+volumes:
+  ftp-data:
+  smb-data:
+  db-data:
+  kuma-data:
+
+services:
+  # --- Pflichtdienste -------------------------------------------------------
+  dns:
+    build: ./bind9
+    image: lf9-lab/bind9:1
+    container_name: lf9-dns
+    restart: unless-stopped
+    logging: *logging
+    networks:
+      br-infra:
+        ipv4_address: 10.20.30.2
+    healthcheck:
+      test: ["CMD-SHELL", "dig +short +time=2 +tries=1 @127.0.0.1 www.kopernikus-lab.lokal | grep -q 10.20.20.4"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: lf9-web
+    restart: unless-stopped
+    logging: *logging
+    volumes:
+      - ./web/conf.d:/etc/nginx/conf.d:ro
+      - ./web/sites:/usr/share/nginx/sites:ro
+    networks:
+      br-web:
+        ipv4_address: 10.20.20.4
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      dns:
+        condition: service_healthy
+
+  ftp:
+    build: ./ftp
+    image: lf9-lab/vsftpd:1
+    container_name: lf9-ftp
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      FTP_USER1_PASSWORD: ${FTP_USER1_PASSWORD:?in .env setzen}
+      FTP_USER2_PASSWORD: ${FTP_USER2_PASSWORD:?in .env setzen}
+    volumes:
+      - ftp-data:/srv/ftp
+    networks:
+      br-files:
+        ipv4_address: 10.20.40.2
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/21'"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  smb:
+    build: ./smb
+    image: lf9-lab/samba:1
+    container_name: lf9-smb
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      SMB_USER1_PASSWORD: ${SMB_USER1_PASSWORD:?in .env setzen}
+      SMB_USER2_PASSWORD: ${SMB_USER2_PASSWORD:?in .env setzen}
+    volumes:
+      - smb-data:/srv/samba
+    networks:
+      br-files:
+        ipv4_address: 10.20.40.3
+    healthcheck:
+      test: ["CMD-SHELL", "smbclient -L //127.0.0.1 -N -m SMB3 >/dev/null 2>&1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # --- Wahldienste ----------------------------------------------------------
+  db:
+    image: mariadb:11.4
+    container_name: lf9-db
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?in .env setzen}
+      MARIADB_ROOT_HOST: localhost
+      DB_WEB_PASSWORD: ${DB_WEB_PASSWORD:?in .env setzen}
+      DB_NEXTCLOUD_PASSWORD: ${DB_NEXTCLOUD_PASSWORD:?in .env setzen}
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      br-db:
+        ipv4_address: 10.20.50.2
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  kuma:
+    image: louislam/uptime-kuma:1.23.16
+    container_name: lf9-kuma
+    restart: unless-stopped
+    logging: *logging
+    volumes:
+      - kuma-data:/app/data
+    networks:
+      br-infra:
+        ipv4_address: 10.20.30.3
+
+  # --- Test-Client (nur Profil "test", nur für den lokalen Test) -------------
+  client:
+    build: ./client
+    image: lf9-lab/client:1
+    container_name: lf9-client
+    profiles: ["test"]
+    dns:
+      - 10.20.30.2
+    networks:
+      br-web:
+        ipv4_address: 10.20.20.250
+      br-infra:
+        ipv4_address: 10.20.30.250
+      br-files:
+        ipv4_address: 10.20.40.250
+      br-db:
+        ipv4_address: 10.20.50.250
