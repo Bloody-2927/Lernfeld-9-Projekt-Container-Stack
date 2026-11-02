@@ -6,6 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 SRC="${1:?Aufruf: bash scripts/restore.sh <Sicherungsordner>}"
 [ -f "$SRC/db.sql" ] || { echo "FEHLER: $SRC/db.sql fehlt."; exit 1; }
+[ -f .env ] || { echo "FEHLER: .env fehlt. Sie ist nicht Teil der Sicherung (Kennwörter); aus dem Passwortmanager oder einer anderen Kopie einsetzen."; exit 1; }
 set -a; . ./.env; set +a
 
 read -r -p "Daten in den Volumes und der Datenbank werden überschrieben. Fortfahren? (ja/nein) " a

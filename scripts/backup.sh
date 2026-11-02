@@ -2,7 +2,7 @@
 # Sicherung der Datenbanken und Volumes (Pflichtenheft Kap. 7.3). STATUS: nicht in der Firewall-VM getestet.
 # Aufruf im Repo-Ordner: bash scripts/backup.sh [Zielordner]
 # Das Ziel soll AUSSERHALB der VM liegen (z. B. per scp auf den Windows-PC kopieren); hier wird lokal gesichert.
-# Wiederherstellung: scripts/restore.sh
+# Die Sicherung enthält Datenbankinhalte und Benutzerdaten, aber keine .env. Wiederherstellung: scripts/restore.sh (benötigt eine vorhandene .env).
 set -euo pipefail
 umask 077
 cd "$(dirname "$0")/.."
@@ -28,8 +28,7 @@ for v in ftp-data smb-data kuma-data nextcloud-data grafana-data portainer-data 
     tar czf "/backup/${v}.tar.gz" -C /data .
 done
 
-# Die .env enthält Kennwörter und wird mitgesichert (umask 077: nur für den Besitzer lesbar). Sicherung nicht weitergeben, ohne sie zu verschlüsseln.
-cp .env "$TMP/env.backup"
+# Die .env (Kennwörter) wird bewusst NICHT mitgesichert. Sie bleibt im Passwortmanager bzw. auf der VM; ohne sie startet der Stack nach einer Wiederherstellung nicht.
 
 mv "$TMP" "$DEST"
 trap - EXIT
