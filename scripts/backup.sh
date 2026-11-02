@@ -28,7 +28,7 @@ for v in ftp-data smb-data kuma-data nextcloud-data grafana-data portainer-data 
     tar czf "/backup/${v}.tar.gz" -C /data .
 done
 
-# Konfiguration ohne Kennwörter mitsichern, die .env getrennt und nur für den Besitzer lesbar
+# Die .env enthält Kennwörter und wird mitgesichert (umask 077: nur für den Besitzer lesbar). Sicherung nicht weitergeben, ohne sie zu verschlüsseln.
 cp .env "$TMP/env.backup"
 
 mv "$TMP" "$DEST"

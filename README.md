@@ -19,7 +19,7 @@ Grundlage: Pflichtenheft V1.2 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und l
 
 | Teil | Stand |
 |---|---|
-| alle 16 Dienste in `compose.yml` (bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma, Asterisk, Caddy, Pi-hole, Nextcloud, Adminer, Grafana, Loki, Promtail, Homepage, Portainer) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (60 von 60 Prüfungen am 02.11.2026). **Noch zu konfigurieren:** Kuma (Konto, Monitore), Nextcloud (Installationsassistent, Datenbank 10.20.50.2), Portainer (Admin-Konto), Pi-hole (Blocklisten, DNS-Weitergabe), Grafana (Dashboards) |
+| alle 16 Dienste in `compose.yml` (bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma, Asterisk, Caddy, Pi-hole, Nextcloud, Adminer, Grafana, Loki, Promtail, Homepage, Portainer) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (61 von 61 Prüfungen am 02.11.2026). **Noch zu konfigurieren:** Kuma (Konto, Monitore), Nextcloud (Installationsassistent, Datenbank 10.20.50.2), Portainer (Admin-Konto), Pi-hole (Blocklisten, DNS-Weitergabe), Grafana (Dashboards) |
 | Zonenübergreifendes Routing, nftables, Reject/Drop | **nicht getestet** – erst in der Firewall-VM möglich (`nftables/lab.nft` ist ein Entwurf) |
 | `setup.sh`, `scripts/windows/01-hyperv-setup.ps1`, `scripts/backup.sh`, `scripts/windows/map-shares.cmd` | **nicht getestet** (Machbarkeitstest 1.0 steht aus) |
 | Zonenübergreifende Wege der neuen Dienste (Caddy zu Kuma, Grafana, Portainer; Pi-hole zu bind9; Nextcloud zu MariaDB) | **nicht getestet**, lokal gibt es kein Routing zwischen den Zonen |
@@ -50,7 +50,7 @@ Der Test-Client (`--profile test`) hängt in allen Zonen. Firewall und Routing z
 - `bind9/`, `web/`, `ftp/`, `smb/`, `db/`, `client/` – Konfiguration je Dienst
 - `nftables/lab.nft` – Firewall-Entwurf
 - `voip/` – Asterisk (Image aus dem Quelltext, Konfiguration)
-- `scripts/` – Backup, Hyper-V-Einrichtung, Mapping-Skript für Windows
+- `scripts/` – Backup und Wiederherstellung (backup.sh, restore.sh, ungetestet), Hyper-V-Einrichtung, Mapping-Skript für Windows
 - Netzwerkdokumentation: Vault, `02 Projekt/LF9 Übungslabor/05P Dokumentation/Netzwerkdokumentation LF9.md`
 - `tests/run-tests.sh` – automatisierte Tests
 
