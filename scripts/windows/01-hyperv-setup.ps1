@@ -14,7 +14,7 @@
 param(
     [Parameter(Mandatory = $true)][string]$IsoPath,
     [string]$VmRoot = 'C:\Hyper-V\lf9',
-    [int]$MemMaxGB = 8,
+    [int]$MemMaxGB = 6,
     [switch]$WithClients
 )
 

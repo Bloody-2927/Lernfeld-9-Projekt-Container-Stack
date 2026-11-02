@@ -40,8 +40,7 @@ table inet lab {
         iifname "eth1" oifname "br-web"   ip daddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Komfort: Pi-hole"
         iifname "eth1" oifname "br-files" ip daddr 10.20.40.2 tcp dport { 21, 21100-21110 } accept comment "FTP"
         iifname "eth1" oifname "br-files" ip daddr 10.20.40.3 tcp dport 445 accept comment "SMB"
-        iifname "eth1" oifname "br-voip"  ip daddr 10.20.60.2 meta l4proto udp th dport { 5060, 3478, 10000-10100 } accept comment "VoIP"
-        iifname "eth1" oifname "br-voip"  ip daddr 10.20.60.2 tcp dport 5060 accept comment "SIP TCP"
+        iifname "eth1" oifname "br-voip"  ip daddr 10.20.60.2 meta l4proto udp th dport { 5060, 10000-10100 } accept comment "VoIP"
 
         # --- Zone zu Zone ------------------------------------------------------
         iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.3 ip daddr 10.20.30.2 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole -> bind9"

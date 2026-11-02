@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lokaler Test der Pflicht- und Wahldienste (Pflichtenheft Kapitel 11, Tests T-01 bis T-06, T-12).
+# Lokaler Test der Pflicht- und Wahldienste (Pflichtenheft Kapitel 11, Tests T-01 bis T-06, T-12, T-15).
 # Voraussetzung: docker compose --profile test up -d --build ; .env vorhanden.
 # Der Test-Client hängt in allen Zonen; Firewall und Routing werden erst in der Firewall-VM getestet.
 set -uo pipefail
@@ -67,7 +67,7 @@ expect_has "web: ALL nur auf webapp.*" "$grants" "webapp"
 roots=$(docker compose exec -T db mariadb -uroot -p"${MARIADB_ROOT_PASSWORD}" -N -e "SELECT host FROM mysql.user WHERE user='root'" 2>&1 | sort -u | tr '\n' ' ')
 expect_eq "root nur auf localhost" "$(echo $roots)" "localhost"
 
-echo "== T-07 VoIP (Asterisk, SIP)"
+echo "== T-15 VoIP (Asterisk, SIP)"
 expect_has "SIP erreichbar (OPTIONS wird beantwortet)" "$(c sipsak -s sip:1001@10.20.60.2 -vv 2>&1)" "SIP/2.0 401"
 expect_has "Nebenstellen 1001 und 1002 konfiguriert" "$(docker compose exec -T voip asterisk -rx 'pjsip show endpoints' 2>&1)" "1002"
 expect_has "Wählplan: Nebenstellen und Echotest 600" "$(docker compose exec -T voip asterisk -rx 'dialplan show intern' 2>&1)" "'600'"
