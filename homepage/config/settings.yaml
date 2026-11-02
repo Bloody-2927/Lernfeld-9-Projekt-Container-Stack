@@ -1,0 +1,15 @@
+title: Heiner-IT Systems – Übungslabor
+headerStyle: boxed
+theme: dark
+color: slate
+language: de
+layout:
+  Öffentlich:
+    style: row
+    columns: 3
+  Betrieb:
+    style: row
+    columns: 3
+  Dateien und Daten:
+    style: row
+    columns: 3

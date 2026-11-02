@@ -1,6 +1,6 @@
 $TTL 3600
 @       IN SOA  dns.kopernikus-lab.lokal. admin.kopernikus-lab.lokal. (
-                2026110303 ; Seriennummer (JJJJMMTTNN)
+                2026110304 ; Seriennummer (JJJJMMTTNN)
                 3600       ; Refresh
                 900        ; Retry
                 604800     ; Expire
@@ -10,7 +10,11 @@ $TTL 3600
 ; Server (Zone 20 Web, 30 Infrastruktur, 40 Fileserver, 50 Datenbank, 60 VoIP)
 dns     IN A    10.20.30.2
 kuma    IN A    10.20.30.3
-loki    IN A    10.20.30.4
+grafana IN A    10.20.30.4
+loki    IN A    10.20.30.5
+homepage IN A   10.20.30.8
+portainer IN A  10.20.30.9
+adminer IN A    10.20.20.6
 caddy   IN A    10.20.20.2
 pihole  IN A    10.20.20.3
 web     IN A    10.20.20.4
@@ -29,6 +33,10 @@ intern  IN A    10.20.20.4
 cloud   IN CNAME caddy
 monitor IN CNAME caddy
 logs    IN CNAME caddy
+portal  IN CNAME caddy
+docker  IN CNAME caddy
+dbadmin IN CNAME caddy
+pihole-ui IN CNAME caddy
 
 ; Clients und Firewall
 fw      IN A    192.168.10.1

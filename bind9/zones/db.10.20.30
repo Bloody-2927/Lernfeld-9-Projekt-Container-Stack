@@ -1,6 +1,9 @@
 $TTL 3600
-@   IN SOA dns.kopernikus-lab.lokal. admin.kopernikus-lab.lokal. ( 2026110301 3600 900 604800 300 )
+@   IN SOA dns.kopernikus-lab.lokal. admin.kopernikus-lab.lokal. ( 2026110302 3600 900 604800 300 )
     IN NS  dns.kopernikus-lab.lokal.
 2   IN PTR dns.kopernikus-lab.lokal.
 3   IN PTR kuma.kopernikus-lab.lokal.
-4   IN PTR loki.kopernikus-lab.lokal.
+4   IN PTR grafana.kopernikus-lab.lokal.
+5   IN PTR loki.kopernikus-lab.lokal.
+8   IN PTR homepage.kopernikus-lab.lokal.
+9   IN PTR portainer.kopernikus-lab.lokal.

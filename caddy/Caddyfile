@@ -1,0 +1,32 @@
+# Reverse Proxy (Komfort-Pfad): ein Name pro Webanwendung, alles über Port 80.
+# TLS ist aus (auto_https off), weil das Labor kein öffentliches Zertifikat bekommt; Verschlüsselung wäre ein Zusatz.
+{
+	auto_https off
+}
+
+http://cloud.kopernikus-lab.lokal {
+	reverse_proxy 10.20.20.5:80
+}
+http://monitor.kopernikus-lab.lokal {
+	reverse_proxy 10.20.30.3:3001
+}
+http://logs.kopernikus-lab.lokal {
+	reverse_proxy 10.20.30.4:3000
+}
+http://portal.kopernikus-lab.lokal {
+	reverse_proxy 10.20.30.8:3000
+}
+http://docker.kopernikus-lab.lokal {
+	reverse_proxy 10.20.30.9:9000
+}
+http://dbadmin.kopernikus-lab.lokal {
+	reverse_proxy 10.20.20.6:8080
+}
+http://pihole-ui.kopernikus-lab.lokal {
+	reverse_proxy 10.20.20.3:80
+}
+
+# Alles andere: kurze Kennung statt Fehlerseite
+:80 {
+	respond "Heiner-IT Systems: Reverse Proxy Caddy (Zone 20)" 200
+}

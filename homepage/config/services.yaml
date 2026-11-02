@@ -1,0 +1,36 @@
+- Öffentlich:
+    - Firmenseite:
+        href: http://www.kopernikus-lab.lokal/
+        description: Website 1 (nginx)
+    - Dienste-Übersicht:
+        href: http://web2.kopernikus-lab.lokal/
+        description: Website 2 (nginx)
+    - Intranet:
+        href: http://intern.kopernikus-lab.lokal/
+        description: nur aus den Client-VMs
+    - Nextcloud:
+        href: http://cloud.kopernikus-lab.lokal/
+        description: Dateien und Zusammenarbeit (über Caddy)
+    - Pi-hole:
+        href: http://pihole-ui.kopernikus-lab.lokal/admin/
+        description: Werbeblocker und DNS-Filter
+- Betrieb:
+    - Uptime Kuma:
+        href: http://monitor.kopernikus-lab.lokal/
+        description: Monitoring aller Dienste
+    - Grafana:
+        href: http://logs.kopernikus-lab.lokal/
+        description: Logs und Verkehr (Loki)
+    - Portainer:
+        href: http://docker.kopernikus-lab.lokal/
+        description: Docker per Weboberfläche
+- Dateien und Daten:
+    - FTP:
+        href: ftp://ftp.kopernikus-lab.lokal/
+        description: vsftpd, anonym und user1/user2
+    - Dateiserver (SMB):
+        href: smb://files.kopernikus-lab.lokal/pub
+        description: Samba, Freigaben pub, Benutzer1, Benutzer2
+    - Datenbank-Weboberfläche:
+        href: http://dbadmin.kopernikus-lab.lokal/
+        description: Adminer zu MariaDB (Zone 50)

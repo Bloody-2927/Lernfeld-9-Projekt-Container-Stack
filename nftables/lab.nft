@@ -37,15 +37,18 @@ table inet lab {
         iifname "eth1" oifname "br-web"   ip daddr 10.20.20.4 tcp dport 80 accept comment "Muss-Pfad: http nginx"
         iifname "eth1" oifname "br-infra" ip daddr 10.20.30.3 tcp dport 3001 accept comment "Monitoring: Uptime Kuma (Screencast)"
         iifname "eth1" oifname "br-web"   ip daddr 10.20.20.2 tcp dport { 80, 443 } accept comment "Komfort: Caddy"
-        iifname "eth1" oifname "br-web"   ip daddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Komfort: Pi-hole"
+        iifname "eth1" oifname "br-web"   ip daddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Komfort: Pi-hole DNS"
+        iifname "eth1" oifname "br-web"   ip daddr 10.20.20.3 tcp dport 80 accept comment "Pi-hole Weboberfläche"
         iifname "eth1" oifname "br-files" ip daddr 10.20.40.2 tcp dport { 21, 21100-21110 } accept comment "FTP"
         iifname "eth1" oifname "br-files" ip daddr 10.20.40.3 tcp dport 445 accept comment "SMB"
         iifname "eth1" oifname "br-voip"  ip daddr 10.20.60.2 meta l4proto udp th dport { 5060, 10000-10100 } accept comment "VoIP"
 
         # --- Zone zu Zone ------------------------------------------------------
-        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.3 ip daddr 10.20.30.2 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole -> bind9"
-        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.2 ip daddr { 10.20.30.3, 10.20.30.4 } tcp dport { 3001, 3000 } accept comment "Caddy -> Kuma/Grafana"
-        iifname "br-web"   oifname "br-db"    ip saddr { 10.20.20.4, 10.20.20.5 } ip daddr 10.20.50.2 tcp dport 3306 accept comment "Web/Nextcloud -> MariaDB"
+        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.2 ip daddr 10.20.30.3 tcp dport 3001 accept comment "Caddy -> Kuma"
+        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.2 ip daddr { 10.20.30.4, 10.20.30.8 } tcp dport 3000 accept comment "Caddy -> Grafana, Homepage"
+        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.2 ip daddr 10.20.30.9 tcp dport 9000 accept comment "Caddy -> Portainer"
+        iifname "br-web"   oifname "br-infra" ip saddr 10.20.20.3 ip daddr 10.20.30.2 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole -> bind9 (Weitergabe)"
+        iifname "br-web"   oifname "br-db"    ip saddr { 10.20.20.4, 10.20.20.5, 10.20.20.6 } ip daddr 10.20.50.2 tcp dport 3306 accept comment "nginx/Nextcloud/Adminer -> MariaDB"
         iifname "br-infra" oifname "br-db"    ip saddr 10.20.30.3 ip daddr 10.20.50.2 tcp dport 3306 accept comment "Kuma Port-Test"
         iifname "br-infra" oifname { "br-web", "br-files", "br-voip" } ip saddr 10.20.30.3 icmp type echo-request accept comment "Kuma Ping"
 
