@@ -238,8 +238,9 @@ services:
     environment:
       TZ: ${TZ:-Europe/Berlin}
       FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD:?in .env setzen}
-      FTLCONF_dns_upstreams: "9.9.9.9"
-      FTLCONF_dns_revServers: "true,10.20.0.0/16,10.20.30.2#53,kopernikus-lab.lokal"
+      # Kein DNS nach außen (Entscheidung Nick 2026-11-02): einziger Upstream ist bind9, Internetnamen werden nicht aufgelöst.
+      # Werbeblocker-Demo über den Abfrage-Log und gesperrte Domains (Antwort 0.0.0.0).
+      FTLCONF_dns_upstreams: "10.20.30.2"
       FTLCONF_dns_listeningMode: all
     volumes:
       - pihole-data:/etc/pihole
