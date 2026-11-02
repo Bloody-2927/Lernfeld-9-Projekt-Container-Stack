@@ -9,8 +9,8 @@ Grundlage: Pflichtenheft V1.2 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und l
 | Zone | Netz | Dienste |
 |---|---|---|
 | 10 Clients | 192.168.10.0/24 | Windows-PC .10, lf9-client1 .11, lf9-client2 .12, lf9-client-gui .13 (Desktop mit Browser), Firewall-VM .1 |
-| 20 Web | 10.20.20.0/24 | nginx .4 mit www, web2, intern und Minispiel (Caddy .2, Pi-hole .3, Nextcloud .5 folgen) |
-| 30 Infrastruktur | 10.20.30.0/24 | bind9 .2, Uptime Kuma .3 (Loki/Grafana .4 folgt) |
+| 20 Web | 10.20.20.0/24 | Caddy .2, Pi-hole .3, nginx .4 (www, web2, intern, Minispiel), Nextcloud .5, Adminer .6 |
+| 30 Infrastruktur | 10.20.30.0/24 | bind9 .2, Uptime Kuma .3, Grafana .4, Loki .5, Promtail .6, Homepage .8, Portainer .9 |
 | 40 Fileserver | 10.20.40.0/24 | vsftpd .2, Samba .3 |
 | 50 Datenbank | 10.20.50.0/24 | MariaDB .2 |
 | 60 VoIP | 10.20.60.0/24 | Asterisk 20 .2 (Nebenstellen 1001 und 1002, Echotest 600) |
@@ -19,17 +19,17 @@ Grundlage: Pflichtenheft V1.2 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und l
 
 | Teil | Stand |
 |---|---|
-| bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma, Asterisk (`compose.yml`) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (39 von 39 Prüfungen am 02.11.2026; Uptime Kuma antwortet auf Port 3001, Monitore noch nicht eingerichtet) |
+| alle 16 Dienste in `compose.yml` (bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma, Asterisk, Caddy, Pi-hole, Nextcloud, Adminer, Grafana, Loki, Promtail, Homepage, Portainer) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (60 von 60 Prüfungen am 02.11.2026). **Noch zu konfigurieren:** Kuma (Konto, Monitore), Nextcloud (Installationsassistent, Datenbank 10.20.50.2), Portainer (Admin-Konto), Pi-hole (Blocklisten, DNS-Weitergabe), Grafana (Dashboards) |
 | Zonenübergreifendes Routing, nftables, Reject/Drop | **nicht getestet** – erst in der Firewall-VM möglich (`nftables/lab.nft` ist ein Entwurf) |
 | `setup.sh`, `scripts/windows/01-hyperv-setup.ps1`, `scripts/backup.sh`, `scripts/windows/map-shares.cmd` | **nicht getestet** (Machbarkeitstest 1.0 steht aus) |
-| Caddy, Pi-hole, Nextcloud, Loki/Grafana | noch nicht umgesetzt (Aufgaben 4.4 bis 4.6) |
+| Zonenübergreifende Wege der neuen Dienste (Caddy zu Kuma, Grafana, Portainer; Pi-hole zu bind9; Nextcloud zu MariaDB) | **nicht getestet**, lokal gibt es kein Routing zwischen den Zonen |
 
 ## Lokaler Test (Docker Desktop, ohne VM)
 
 ```bash
 cp .env.example .env        # Passwörter ersetzen (CHANGE_ME), .env wird nicht committet
 docker compose --profile test up -d --build
-bash tests/run-tests.sh     # Tests T-01 bis T-06, T-12 und T-15 (VoIP), Pflichtenheft Kapitel 11
+bash tests/run-tests.sh     # Tests T-01 bis T-06, T-12 und T-15 bis T-19, Pflichtenheft Kapitel 11
 docker compose --profile test down       # Container stoppen (Daten bleiben in den Volumes)
 docker compose --profile test down -v    # zusätzlich Volumes löschen
 ```
