@@ -64,8 +64,11 @@ table inet lab {
         # --- Internet (nur Updates, nach Freigabe: Zeile aktivieren) -------------
         # iifname { "br-web" } oifname "eth0" ip saddr 10.20.20.3 meta l4proto { tcp, udp } th dport 53 accept comment "Pi-hole Upstream"
 
-        # Aus der Client-Zone wird abgelehnt (sofortige Rückmeldung), zwischen Server-Zonen still verworfen
-        iifname "eth1" limit rate 10/second log prefix "FW-REJECT " counter reject with icmpx type admin-prohibited
+        # Aus der Client-Zone wird abgelehnt (sofortige Rückmeldung), zwischen Server-Zonen still verworfen.
+        # Log und Reject stehen in getrennten Regeln: Stünde 'limit rate' in der Reject-Regel, griffe sie ab
+        # 10 Paketen pro Sekunde nicht mehr und der Verkehr liefe still in den Drop (Rollenprüfung 2026-11-03, FI-12).
+        iifname "eth1" limit rate 10/second log prefix "FW-REJECT " counter
+        iifname "eth1" reject with icmpx type admin-prohibited
         limit rate 10/second log prefix "FW-DROP " counter drop
     }
 

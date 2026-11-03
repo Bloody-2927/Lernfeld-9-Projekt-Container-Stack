@@ -79,6 +79,11 @@ if [ ! -f .env ]; then
     esac
   done < .env.example > .env
   chmod 600 .env
+  # Besitzer ist der Benutzer, der sudo aufgerufen hat. Sonst kann er die Datei nicht lesen, und
+  # 'docker compose' sowie 'tests/run-tests.sh' scheitern beim ersten Lauf (Rollenprüfung 2026-11-03, SA-17).
+  if [ -n "${SUDO_USER:-}" ]; then
+    chown "${SUDO_USER}" .env
+  fi
   echo ".env mit Zufallskennwörtern erzeugt (chmod 600). Nicht ins Repo, nicht in Notizen."
 fi
 if grep -q 'CHANGE_ME' .env; then
@@ -88,3 +93,4 @@ fi
 
 echo
 echo "Fertig. Nächste Schritte: 'docker compose up -d --build', danach 'bash tests/run-tests.sh'."
+echo "Der Test startet den Test-Client (Profil test) selbst. Ohne Mitgliedschaft in der Gruppe docker beide Befehle mit 'sudo' aufrufen."

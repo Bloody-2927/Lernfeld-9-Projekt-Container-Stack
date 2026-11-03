@@ -30,6 +30,7 @@ Grundlage: Pflichtenheft V1.2 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und l
 cp .env.example .env        # Passwörter ersetzen (CHANGE_ME), .env wird nicht committet
 docker compose --profile test up -d --build
 bash tests/run-tests.sh     # Tests T-01 bis T-06, T-12 und T-15 bis T-19, Pflichtenheft Kapitel 11
+                            # startet den Test-Client (Profil test) selbst; [OFFEN] = manuelles Erstkonto, kein Fehler
 docker compose --profile test down       # Container stoppen (Daten bleiben in den Volumes)
 docker compose --profile test down -v    # zusätzlich Volumes löschen
 ```
