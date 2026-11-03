@@ -2,7 +2,7 @@
 
 Docker-Stack und Skripte für den Laborübungsplatz der Heiner-IT Systems GmbH.
 Projektleitung: Team Heiner-IT Systems. Abgabe: 07.12.2026.
-Grundlage: Pflichtenheft V1.2 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und logischer Netzwerkplan V1.2.
+Grundlage: Pflichtenheft V1.3 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und logischer Netzwerkplan V1.3.
 
 ## Aufbau
 
@@ -19,7 +19,7 @@ Grundlage: Pflichtenheft V1.2 (Zonenmodell, Adressplan 10.20.x, Regelwerk) und l
 
 | Teil | Stand |
 |---|---|
-| alle 16 Dienste in `compose.yml` (bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma, Asterisk, Caddy, Pi-hole, Nextcloud, Adminer, Grafana, Loki, Promtail, Homepage, Portainer) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (61 von 61 Prüfungen am 02.11.2026). **Noch zu konfigurieren:** Kuma (Konto, Monitore), Nextcloud (Installationsassistent, Datenbank 10.20.50.2), Portainer (Admin-Konto), Pi-hole (Blocklisten, DNS-Weitergabe), Grafana (Dashboards) |
+| alle 16 Dienste in `compose.yml` (bind9, nginx, vsftpd, Samba, MariaDB, Uptime Kuma, Asterisk, Caddy, Pi-hole, Nextcloud, Adminer, Grafana, Loki, Promtail, Homepage, Portainer) | gebaut und mit `tests/run-tests.sh` auf Docker Desktop getestet (66 von 66 Prüfungen am 03.11.2026, dazu die Zeilen `[OFFEN]` für die manuellen Erstkonten). **Von Hand zu konfigurieren:** Erstkonten für Kuma, Nextcloud (Datenbank 10.20.50.2 prüfen), Portainer (mit dem Setup-Token aus `docker logs lf9-portainer`) und Grafana, dazu Kuma-Monitore, Pi-hole (Blocklisten, DNS-Weitergabe) und Grafana-Dashboards |
 | Zonenübergreifendes Routing, nftables, Reject/Drop | **nicht getestet** – erst in der Firewall-VM möglich (`nftables/lab.nft` ist ein Entwurf) |
 | `setup.sh`, `scripts/windows/01-hyperv-setup.ps1`, `scripts/backup.sh`, `scripts/windows/map-shares.cmd` | **nicht getestet** (Machbarkeitstest 1.0 steht aus) |
 | Zonenübergreifende Wege der neuen Dienste (Caddy zu Kuma, Grafana, Portainer; Pi-hole zu bind9; Nextcloud zu MariaDB) | **nicht getestet**, lokal gibt es kein Routing zwischen den Zonen |
